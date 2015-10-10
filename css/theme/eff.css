@@ -4,6 +4,9 @@
  *
  * This theme is Copyright (C) 2012-2013 Owen Versteeg, http://owenversteeg.com - it is MIT licensed.
  */
+@import url(http://fonts.googleapis.com/css?family=Playfair+Display);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
+@import url(http://fonts.googleapis.com/css?family=Inconsolata);
 .reveal a {
   line-height: 1.3em; }
 
@@ -11,12 +14,12 @@
  * GLOBAL STYLES
  *********************************************/
 body {
-  background: #F0F1EB;
-  background-color: #F0F1EB; }
+  background: #FFFFFF;
+  background-color: #FFFFFF; }
 
 .reveal {
-  font-family: "Gentium", "Palatino Linotype", "Book Antiqua", Palatino, FreeSerif, serif;
-  font-size: 36px;
+  font-family: Palatino, FreeSerif, serif;
+  font-size: 34px;
   font-weight: normal;
   color: #000; }
 
@@ -41,7 +44,7 @@ body {
 .reveal h6 {
   margin: 0 0 20px 0;
   color: #383D3D;
-  font-family: "Futura";
+  font-family: "Open Sans Condensed", "Playfair Display";
   font-weight: normal;
   line-height: 1.2;
   letter-spacing: normal;
@@ -290,3 +293,6 @@ body {
  *********************************************/
 .reveal .slide-number {
   color: #51483D; }
+
+.reveal code {
+  font-family: Inconsolata; }

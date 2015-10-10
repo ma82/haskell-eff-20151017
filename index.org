@@ -1,0 +1,884 @@
+# Local Variables:
+# eval: (remove-hook 'after-save-hook 'the-hook)
+# eval: (defun the-hook () (if (equal (buffer-file-name) "/home/matteo/src/private/haskell-eff-20151017/index.org") (org-reveal-export-to-html)))
+# eval: (add-hook 'after-save-hook 'the-hook)
+# End:
+
+# Based on org-reveal 15c7043 !
+
+#+Author: Matteo Acerbi
+#+Email: matteo.acerbi@gmail.com
+#+Title: Modular and extensible effects in Haskell
+
+#+OPTIONS: reveal_center:t reveal_progress:t reveal_history:t reveal_control:t
+#+OPTIONS: reveal_mathjax:t reveal_rolling_links:t reveal_keyboard:t reveal_overview:t num:nil
+#+REVEAL_HLEVEL: 1
+#+REVEAL_ROOT: ./
+#+REVEAL_THEME: eff
+# #+REVEAL_THEME: moon
+#+REVEAL_TRANS: none
+#+REVEAL_PLUGINS: (highlight markdown notes)
+#+OPTIONS: reveal_fragments:t
+#+OPTIONS: toc:nil
+
+* Monadic effects
+
+** What is a monad?
+
+Type constructor with /unit/ (=return=) and /bind/ (~>>=~),
+
+#+BEGIN_SRC haskell
+class Monad (m :: * -> *) where
+  return :: a -> m a
+  (>>=)  :: m a -> (a -> m b) -> m b
+#+END_SRC
+
+satisfying the following laws:
+
+#+BEGIN_SRC haskell
+return x >>= f == f x
+m >>= return == m
+(m >>= f) >>= g == m >>= (\ x -> f x >>= g)
+#+END_SRC
+
+** Computational effects can be modelled as monads
+
+- Example 1: =State Int=
+
+#+BEGIN_SRC haskell
+increment :: State Int ()
+increment = do
+  x <- get
+  put $ x+1
+#+END_SRC
+
+- Example 2: =IO=
+
+#+BEGIN_SRC haskell
+main :: IO ()
+main = do
+  putStrLn $ "What is your name?"
+  x <- getLine
+  putStrLn $ "Hello, " ++ x ++ "!"
+#+END_SRC
+
+** More than one monad?
+
+- The underlying functors compose!
+
+  =State s (Maybe (IO a))=
+
+- How to deal with these "stacks" in a uniform way?
+
+** Monad transformers
+
+Monads with a "hole" for another monad
+
+Values in the inner monad can be lifted to the outer
+
+#+BEGIN_SRC haskell
+class MonadTrans (f :: (* -> *) -> * -> *) where
+  lift :: Monad m => m a -> t m a
+#+END_SRC
+
+=lift= must respect =return= and ~>>=~
+
+#+BEGIN_SRC haskell
+lift . return = return
+lift (m >>= f) = lift m >>= (lift . f)
+#+END_SRC
+
+** Monad transformers
+
+Examples
+
+#+BEGIN_SRC haskell
+newtype MaybeT m a = MaybeT {runMaybeT :: m (Maybe a)}
+
+instance MonadTrans MaybeT where
+  lift = MaybeT . liftM Just
+
+type Maybe a = MaybeT Identity a
+#+END_SRC
+
+#+BEGIN_SRC haskell
+newtype StateT s m a = StateT {runStateT :: s -> m (a, s)}
+
+instance MonadTrans (StateT s) where
+  lift m = StateT $ \ s -> do
+    a <- m
+    return (a, s)
+
+type State s a = StateT s Identity a
+#+END_SRC
+
+** Order is relevant!
+
+We have
+
+~StateT s Maybe a ≠ MaybeT (State s) a~
+
+because
+
+~s -> Maybe (s , a) ≠ s -> (s , Maybe a)~
+
+* Monadic programming: software engineering concerns
+
+** Issue 1: modularity
+
+Monolithic effects
+
+#+BEGIN_SRC haskell
+data TheMonadOfMyApp a =
+  TheMonadOfMyApp (MyState -> (IO (MyLog , MyState , a)))
+
+instance Monad TheMonadOfMyApp where
+  ...
+
+justSayHello :: TheMonadOfMyApp ()
+justSayHello = TheMonadOfMyApp $ \ db -> do
+  putStrLn $ "Hello!"
+  return ("Just said hello!" , db , ())
+
+main :: IO ()
+main = runTheMonadOfMyApp initialState $ do
+  justSayHello
+  ...
+#+END_SRC
+
+** Issue 1: modularity
+
+We would prefer
+
+#+BEGIN_SRC haskell
+justSayHello :: StdOutput ()
+justSayHello = putStrLn "Hello!"
+#+END_SRC
+
+or
+
+#+BEGIN_SRC haskell
+justSayHello :: StdOutput m => m ()
+justSayHello = putStrLn "Hello!"
+#+END_SRC
+
+** Issue 2: extensibility
+
+It should also be *easy* to add a new effect to our "vocabulary"
+
+There should be no need to
+
+- change the types of previous code
+- relate the new effect to the previously defined effects
+
+# *  
+# :PROPERTIES:
+# :reveal_background: images/
+# :END:
+
+* Thesis
+
+# :PROPERTIES:
+# :reveal_background: #D39C9C
+# :END:
+
+Use *type classes* to capture monadic interfaces
+
+** Monad Transformer Library
+
+standard monad transformers
+
+=+=
+
+type classes with their abstract interfaces
+
+#+ATTR_REVEAL: :frag roll-in
+
+See [[http://web.cecs.pdx.edu/~mpj/pubs/springschool.html][Jones 1995]]
+
+** Example: MonadState
+
+#+BEGIN_SRC haskell
+increment :: State Int ()
+increment = do
+  x <- get
+  put $ x+1
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC haskell
+increment :: MonadState Int m => m ()
+increment = do
+  x <- get
+  put $ x+1
+#+END_SRC
+
+** Example: MonadIO
+
+#+BEGIN_SRC haskell
+main :: IO ()
+main = do
+  putStrLn $ "What is your name?"
+  x <- getLine
+  putStrLn $ "Hello, " ++ x ++ "!"
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC haskell
+main :: MonadIO m => m ()
+main = do
+  putStrLn $ "What is your name?"
+  x <- getLine
+  putStrLn $ "Hello, " ++ x ++ "!"
+#+END_SRC
+
+** Problem: Cannot have many =State= s in the stack
+
+Due to functional dependency!
+
+#+BEGIN_SRC haskell
+class Monad m => MonadState s m | m -> s where
+  get :: m s
+  put :: s -> m ()
+#+END_SRC
+
+If you omit ~| m -> s~, you need =OverlappingInstances=
+
+Same for =MonadReader= and =MonadWriter=.
+
+** Problem: Order
+
+- The order of effects counts!
+
+- However, we cannot constrain the order of the abstract ones.
+
+- How to read =program=?
+
+#+BEGIN_SRC haskell
+program :: (MonadError () m , MonadState s m) => m ()
+#+END_SRC
+
+** Problem: Poor extensibility
+
+To add the (n+1)-th monad transformer,
+
+we must give [[https://hackage.haskell.org/package/mtl-2.2/docs/src/Control-Monad-Reader-Class.html][n instances]].
+
+=lift= is extremely ad hoc!
+
+* Antithesis
+
+Represent effectful programs as *modular* *syntax*
+
+*Handlers* interpret syntax as monads
+
+** Free Monad
+
+A datatype parameterised by a =f :: * -> *= operator
+
+#+BEGIN_SRC haskell
+data Free f a =
+    Return a
+  | Free (f (Free f a))
+#+END_SRC
+
+When =f= is a =Functor=, =Free f= is a =Monad= !
+
+#+BEGIN_SRC haskell
+instance Functor f => Monad (Free f) where
+  return = Return
+  (Return a) >>= f = f a
+  (Free  xs) >>= f = Free (fmap (>>= f) xs)
+#+END_SRC
+
+We use =Free a= as a generic representation for monadic computations
+
+** What is =Free f=?
+
+- Example: Take =f = Arithmetics=
+
+  #+BEGIN_SRC haskell
+  data Arithmetics a =
+      Val Int
+    | Plus a a
+    deriving Functor
+  #+END_SRC
+
+- =Free Arithmetics x= represents expressions made from
+  - integer values
+  - binary operator =+=
+  - variables from the set =x=
+
+** What is =Free f=?
+
+Take =Vars= as the type of two "variables" =x= and =y=
+
+#+BEGIN_SRC haskell
+data Vars = varX | varY
+#+END_SRC
+
+=x + (2 + y)= is captured by
+
+#+BEGIN_SRC haskell
+Free (Plus (return varX)
+           (Free (Plus (Val 2)
+                       (return varY))))
+#+END_SRC
+
+#+ATTR_REVEAL: :frag roll-in
+
+Monadic operations:
+
+- =return x= is an *occurrence* of variable =x=
+
+- ~>>=~ is *substitution*
+
+# ** Languages?
+
+# Yes! Main idea of this approach:
+
+# 1. define modular and extensible syntax
+# 2. define modular interpreters from that syntax to some monad
+
+# - Should be an instance of the (co-)Yoneda lemma
+
+# Related:
+
+# #+BEGIN_SRC haskell
+# data Coyoneda f a where
+#   Coyoneda :: forall b. (b -> a) -> f b -> Coyoneda f a
+# #+END_SRC
+
+** Datatypes à la carte [W. Swierstra, 2008]
+
+A simple notion of subtyping between functors:
+
+#+BEGIN_SRC haskell
+data (f :+: g) e = Inl (f e) | Inr (g e)
+
+class (Functor sub, Functor sup) => (:<:) sub sup where
+  inj :: sub a -> sup a
+
+instance (Functor f, Functor g, Functor h, f :<: g) => f :<: (g :+: h) where
+  inj = Inl
+
+instance (Functor f, Functor g, Functor h, f :<: h) => f :<: (g :+: h) where
+  inj = Inr
+#+END_SRC
+
+#+ATTR_REVEAL: :frag roll-in
+
+Not real Haskell: original version has restrictions
+
+See also [[http://wadler.blogspot.it/2008/02/data-types-la-carte.html][Wadler 2008 (blog)]], [[http://www.diku.dk/~paba/pubs/files/bahr14stg-slides.pdf][Bahr 2014 (slides)]]
+
+** Handlers
+
+# - If =f= is a functor and =a= a type,
+
+#   an =f= - *algebra* is a function of type =f a -> a=
+
+# - A *handler* is a (family of) =f=-algebra(s) to some target monad =m=:
+
+- Take =m= as the target monad
+
+- A *handler* for the *effect* =f= is a function of type:
+
+  =forall a. f (m a) -> m a=
+
+- Let's fix ~m = IO~ as target
+
+#+BEGIN_SRC haskell
+class Functor f => Handler f where
+  handler :: forall a. f (IO a) -> IO a
+#+END_SRC
+
+** Example: =Teletype= + =FileSystem=
+
+Effects
+
+#+BEGIN_SRC haskell
+data Teletype a =
+    GetChar (Char -> a)
+  | PutChar Char a
+  deriving Functor
+
+data FileSystem a =
+    ReadFile  FilePath (String -> a)
+  | WriteFile FilePath String a
+  deriving Functor
+#+END_SRC
+
+Primitives
+
+#+BEGIN_SRC haskell
+getChar   :: Teletype   :<: f => Free f Char
+putChar   :: Teletype   :<: f => Char -> Free f ()
+readFile  :: FileSystem :<: f => FilePath -> Free f String
+writeFile :: FileSystem :<: f => FilePath -> String -> Free f ()
+
+getChar = GetChar Return
+putChar c = PutChar c $ Return ()
+readFile fp = ReadFile fp Return
+writeFile fp s = WriteFile fp s $ Return ()
+#+END_SRC
+
+** Example: =Teletype= + =FileSystem=
+
+Example program: UNIX =cat=
+
+#+BEGIN_SRC haskell
+cat :: FilePath -> Free (Teletype :+: FileSystem) ()
+cat fp = readFile fp >>= mapM_ putChar
+#+END_SRC
+
+(Alternative type for the same program)
+
+#+BEGIN_SRC haskell
+cat :: (Teletype :<: f , FileSystem :<: f) => FilePath -> Free f ()
+#+END_SRC
+
+** Example: =Teletype= + =FileSystem=
+
+Handlers
+
+#+BEGIN_SRC haskell
+instance Handler Teletype where
+  handler (GetChar   f) = Prelude.getChar >>= f
+  handler (PutChar c m) = Prelude.putChar x >> m
+
+instance Handle FileSystem where
+  handler (ReadFile  fp   f) = Prelude.readFile fp >>= f
+  handler (WriteFile fp s m) = Prelude.writeFile fp s >> m
+#+END_SRC
+
+** Modularity!
+
+Handler for the sum of two effects, given the single handlers
+
+#+BEGIN_SRC haskell
+instance (Handler f, Handler g) => Handler (f :+: g) where
+  handler (Inl x) = handler x
+  handler (Inr y) = handler y
+#+END_SRC
+
+A generic evaluator for effectful programs
+
+#+BEGIN_SRC haskell
+handle :: Handler f => Free f a -> IO a
+handle (Return a) = return a
+handle (Pure  xs) = handle (fmap handle xs)
+#+END_SRC
+
+Example: running the =cat= program in the =IO= monad
+
+#+BEGIN_SRC haskell
+main :: IO ()
+main = handle cat
+#+END_SRC
+
+** Extensibility?
+
+Easy to define a new effect!
+
+However, extending the *target* monad is *not* considered.
+
+E.g.: with =IO= as target monad, how to interpret =State s=?
+
+#+BEGIN_SRC haskell
+data State s a =
+    Get (s -> State s a)
+  | Put s (State s a)
+#+END_SRC
+
+Without unsafe tricks, =IO a= cannot manage a state of type =s=!
+
+** Left-nested applications of =++=
+
+Intuitively,
+
+=(xs ++ ys) ++ zs= takes =|xs| + (|xs| + |ys|)= steps
+
+while
+
+=xs ++ (ys ++ zs)= takes =|xs| + |ys|= steps.
+
+Consequence: =reverse= via =++= is $O(n^2)$ instead of $O(n)$.
+
+** Left-nested applications of ~Free.>>=~
+
+Similarly, for =Free=
+
+~(m >>= f) >>= g~
+
+is slower than
+
+~m >>= (\ x -> f x >>= g)~
+
+[[[http://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf][Voigtländer 2008]]] shows examples of affected algorithms.
+
+Higher-order free-monadic programs become problematic!
+
+** Solutions
+
+- Unimo  [[[https://sites.google.com/site/chklin/research/unimo-icfp06.pdf?attredirects=0][Chuan-kai Lin 2006]]]
+- Codensity [[[http://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf][Voigtländer 2008]]]
+- Continuation [[[http://homepages.inf.ed.ac.uk/slindley/papers/handlers.pdf][KammarLindleyOury 2013]]]
+- Freer [[[http://okmij.org/ftp/Haskell/extensible/more.pdf][KiselyovIshii 2015]]]
+- ...
+
+[[#faster][(details)]]
+
+* Synthesis
+
+Use *type classes* and *type families* to capture monadic interfaces
+
+** Modularity
+
+- Type families and constraint kinds allow "microeffects":
+
+#+BEGIN_SRC haskell
+class Monad m => Get a m where
+  get :: m a
+
+class Monad m => Put a m where
+  put :: a -> m ()
+
+type family State (a :: *) (m :: * -> *) :: Constraint
+type instance State a m = (Get a m , Put a m)
+
+class Monad m => Input m where
+  input :: m String
+class Monad m => Output m where
+  output :: String -> m ()
+
+type family InputOutput (m :: * -> *) :: Constraint
+type instance InputOutput m = (Input m , Output m)
+#+END_SRC
+
+- Doing this with a class definition seems to require
+=UndecidableInstances=
+
+- Not sure about where to mention laws, though!
+
+** Modularity
+
+Example usage:
+
+#+BEGIN_SRC haskell
+inputAmount :: Input m => m (Maybe Amount)
+inputAmount = liftM readMaybe input
+
+deposit :: (InputOutput m , Put Amount m) => m ()
+deposit = do
+  x <- untilJust $ do
+    output "Enter the amount you want to store:"
+    inputAmount
+  put x
+  output "Goodbye!"
+#+END_SRC
+
+** An interesting library
+
+- =monad-classes= by Roman Cheplyaka
+- [[https://ro-che.info/articles/extensible-effects][blog]]
+- [[https://github.com/feuerbach/monad-classes][code]]
+- Used in production at Signal Vine
+- No theoretical treatment (yet)
+- Similar: =extensible-transformers=
+
+** =monad-classes=: Extensibility
+
+- Finding a transformer in a stack, with type families
+
+#+BEGIN_SRC haskell
+type family Find (t :: (* -> *) -> (* -> *)) (m :: * -> *) :: Nat where
+  Find t (t m) = Zero
+  Find t (p m) = Suc (Find t m)
+#+END_SRC
+
+** =monad-classes=: Extensibility
+
+- Example: lifting =Reader='s =ask= to any transformer stack
+
+#+BEGIN_SRC haskell
+class Monad m => MonadReaderN (n :: Nat) r m where
+  askN :: Proxy n -> m r
+
+instance Monad m => MonadReaderN Zero r (ReaderT r m) where
+  askN _ = Trans.ask
+
+instance (MonadTrans t, Monad (t m), MonadReaderN n r m, Monad m) =>
+         MonadReaderN (Suc n) r (t m) where
+  askN _ = lift $ askN (Proxy :: Proxy n)
+
+type MonadReader r m = MonadReaderN (Find (ReaderT r) m) r m
+
+ask :: forall m r . MonadReader r m => m r
+ask = askN (Proxy :: Proxy (Find (ReaderT r) m))
+#+END_SRC
+
+** =monad-classes=: Extensibility
+
+- Quadratic number of instances, no more!
+
+- No functional dependencies -> may have several =State s=
+
+- You can use newtypes for =s= to distinguish their roles
+
+** =monad-classes=: =CanDo=
+
+#+BEGIN_SRC haskell
+type family CanDo (m :: (* -> *)) (eff :: k) :: Bool
+#+END_SRC
+
+- Allows the lifting to be independent of specific transformers
+
+- We can lift to effects which are more general than those requested
+
+- e.g.: =StateT= generalises both =ReaderT= and =WriterT=
+
+- See [[http://ro-che.info]] for more.
+
+** Why is this a synthesis?
+
+- Consider the syntactic constructions
+
+  =Free=, =Operational=, =Unimo=, =Freer= ...
+
+- You might want to use them for your project!
+
+- However, have your syntax instantiate the abstract interfaces:
+
+#+BEGIN_SRC haskell
+instance (Teletype :<: f) => Input (Free f) where
+  input = getChar
+instance (Teletype :<: f) => Output (Free f) where
+  output = putChar
+instance (FileSystem :<: f) => ReadFile (Free f) where
+  readFile = FileSystem.readFile
+instance (FileSystem :<: f) => WriteFile (Free f) where
+  writeFile = FileSystem.writeFile
+#+END_SRC
+
+** Why is this a synthesis?
+
+- Then, write programs with abstract types
+
+#+BEGIN_SRC haskell
+cat :: (Output m , ReadFile m) => FilePath -> m ()
+cat fp = readFile fp >>= mapM_ output
+#+END_SRC
+
+- Pick a concrete representation only at the very end
+
+#+BEGIN_SRC haskell
+main :: IO ()
+main = handle cat
+#+END_SRC
+
+(Remember that =handle :: Handler f => Free f a -> IO a=)
+
+** Warning!
+
+- I did not test this
+
+- It probably needs more annotations
+
+- It might prevent some optimisations
+
+* Conclusions
+
+** Datatypes à la Carte, Handlers in Action, Freer...
+
+- Important connections with theory
+
+- Performance oddities not unlikely
+  - [[https://github.com/feuerbach/freemonad-benchmark][freemonad-benchmark]]
+  - [[[http://okmij.org/ftp/Haskell/extensible/more.pdf][KiselyovIshii 2015]]]
+
+- Still, free-monadic code can be analysed by other programs
+  - optimising interpreters or compilers!
+  - e.g.: Haxl
+
+** MTL, =monad-classes=, (finally-tagless), ...
+
+- Monad stacks are inevitable in Haskell
+
+- Maybe also monad transformer stacks
+
+- People will use their own
+  - HisApp x y
+  - TheirFramework a b c d
+
+- Better make an effort to keep effects abstract
+
+** Gang of Four, 1995
+
+"Program to an 'interface', not an 'implementation'."
+
+* QA
+
+* Grazie!
+
+* More ...
+* ... on monad transformers
+** Monatron
+
+- solves some problems
+- requires more structure:
+
+#+BEGIN_SRC haskell
+class MonadT t where
+  lift    :: Monad m => m a -> t m a
+  treturn :: Monad m => a -> t m a
+  tbind   :: Monad m => t m a -> (a -> t m b) -> t m b
+#+END_SRC
+
+* ... on "free" effects
+** Effects, syntactically
+
+The syntactic =State= monad
+
+#+BEGIN_SRC haskell
+data State s x =
+    Return x
+  | Get (s -> State s x)
+  | Put s (State s x)
+
+instance Monad State where
+  return = Return
+  (Get k  ) >>= f = Get (\ s -> k s >>= f)
+  (Put s x) >>= f = Put s (x >>= f)
+
+handle :: State s x -> s -> (s , x)
+handle (Return x  ) s = (s , x)
+handle (Get    f  ) s = handle (f s) s
+handle (Put    s x) _ = handle
+#+END_SRC
+
+** Effects, syntactically
+
+Programs in the syntactic State monad
+
+#+BEGIN_SRC haskell
+get :: State s s
+get = Get (\ s -> Return s)
+
+put :: State s ()
+put s = Put s (Return ())
+
+increment :: State Int ()
+increment = get >>= put . (+1)
+#+END_SRC
+
+#+ATTR_REVEAL: :frag roll-in
+
+** Problem: syntactic =State= is not modular!
+
+We need a more generic representation
+
+# *  
+# :PROPERTIES:
+# :reveal_background: images/gof.jpg
+# :END:
+
+* ... on faster free monadic computations
+  :PROPERTIES:
+  :CUSTOM_ID: faster
+  :END:
+** Alternative free monad: =Operational=
+
+#+BEGIN_SRC haskell
+data Operational f a where
+    Return :: a -> Operational f a
+    Then   :: forall a. f a -> (a -> Operational f b) -> Operational f b
+#+END_SRC
+
+By Parametricity, =Operational f a= is isomorphic to =Free f a=
+
+** 1. Unimo [[[https://sites.google.com/site/chklin/research/unimo-icfp06.pdf?attredirects=0][Chuan-kai Lin 2006]]]
+
+#+BEGIN_SRC haskell
+data Unimo f a =
+    Return a
+  | Free (f (Free f a))
+  | forall b. Bind (Unimo f b) (b -> Unimo f a)
+#+END_SRC
+
+- Not really a monad
+  - You must restrict observations
+  - See also Uustalu 2012, Jaskelioff 2015
+- Easy to use and understand
+- (The =operational= package adds =Bind= internally)
+
+** 2. Codensity [[[http://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf][Voigtländer 2008]]]
+
+- =Codensity= transformation
+
+#+BEGIN_SRC haskell
+newtype Codensity f a = Codensity (forall r. (a -> f r) -> f r)
+#+END_SRC
+
+- Yoneda lemma implies this isomorphism:
+
+#+BEGIN_SRC haskell
+rep :: Monad m => Codensity m a -> m a
+abs :: Monad m => m a -> Codensity m a
+#+END_SRC
+
+- If you use =Codensity (Free f)= instead of =Free f=:
+
+  ~(m >>= f) >>= g~
+  reduces to (almost)
+  ~m >>= \ x -> f x >>= g~
+
+  before =m=, =f= and =g= are evaluated!
+
+- Related to CPS transformation
+
+** 6. Continuation [[[http://homepages.inf.ed.ac.uk/slindley/papers/handlers.pdf][KammarLindleyOury 2013]]]
+
+- One of three alternative representations for "Handlers in Action"
+- Ad-hoc continuation monad
+- No recursive datatypes, no tags
+- If I understood correctly, similar to "[[http://comonad.com/reader/2011/free-monads-for-less-2/][Going to Church]]"
+- More extensible than Datatypes à la Carte
+- Template Haskell 😟
+
+** 9. Freer [[[http://okmij.org/ftp/Haskell/extensible/more.pdf][KiselyovIshii 2015]]]
+
+- Based on =Operational=
+
+- No =:+:= and =:<:=, but
+  - =Union r v ::=
+    =*=
+    - where =r= is a type-level list of "effect labels"
+    - and =v= is the type of "variables"
+  - =Member f r ::=
+    =Constraint=
+
+- Precedence between handlers counts!
+  - No functor algebras
+  - Each handler relays on the next
+  - Easier to extend target monad!
+
+** 9. Freer [[[http://okmij.org/ftp/Haskell/extensible/more.pdf][KiselyovIshii 2015]]]
+
+- Interesting optimisation [[[http://okmij.org/ftp/Haskell/zseq.pdf][KiselyovVanDerPloeg 2014]]]
+
+  Recall =Operational=:
+
+  #+BEGIN_SRC haskell
+  data Operational f a where
+    Return :: a -> Operational f a
+    Then :: forall a. f a -> (a -> Operational f b) -> Operational f b
+  #+END_SRC
+
+  In =Freer=, =(a -> Operational f b)= is "reified" as an efficient
+  heterogeneous sequence of continuations (fast append!)
+
+- No algebras -> more extensible than Datatypes à la Carte
+

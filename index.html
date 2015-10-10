@@ -1,411 +1,1375 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Modular and extensible effects in Haskell</title>
+<meta name="author" content="Matteo Acerbi"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="./css/reveal.css"/>
 
-	<head>
-		<meta charset="utf-8">
+<link rel="stylesheet" href="./css/theme/eff.css" id="theme"/>
 
-		<title>reveal.js - The HTML Presentation Framework</title>
-
-		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
-		<meta name="author" content="Hakim El Hattab">
-
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css" id="theme">
-
-		<!-- Code syntax highlighting -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
-
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-
-		<!--[if lt IE 9]>
-		<script src="lib/js/html5shiv.js"></script>
-		<![endif]-->
-	</head>
-
-	<body>
-
-		<div class="reveal">
-
-			<!-- Any section element inside of this container is displayed as a slide -->
-			<div class="slides">
-				<section>
-					<h1>Reveal.js</h1>
-					<h3>The HTML Presentation Framework</h3>
-					<p>
-						<small>Created by <a href="http://hakim.se">Hakim El Hattab</a> / <a href="http://twitter.com/hakimel">@hakimel</a></small>
-					</p>
-				</section>
-
-				<section>
-					<h2>Hello There</h2>
-					<p>
-						reveal.js enables you to create beautiful interactive slide decks using HTML. This presentation will show you examples of what it can do.
-					</p>
-				</section>
-
-				<!-- Example of nested vertical slides -->
-				<section>
-					<section>
-						<h2>Vertical Slides</h2>
-						<p>Slides can be nested inside of each other.</p>
-						<p>Use the <em>Space</em> key to navigate through all slides.</p>
-						<br>
-						<a href="#" class="navigate-down">
-							<img width="178" height="238" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Down arrow">
-						</a>
-					</section>
-					<section>
-						<h2>Basement Level 1</h2>
-						<p>Nested slides are useful for adding additional detail underneath a high level horizontal slide.</p>
-					</section>
-					<section>
-						<h2>Basement Level 2</h2>
-						<p>That's it, time to go back up.</p>
-						<br>
-						<a href="#/2">
-							<img width="178" height="238" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Up arrow" style="transform: rotate(180deg); -webkit-transform: rotate(180deg);">
-						</a>
-					</section>
-				</section>
-
-				<section>
-					<h2>Slides</h2>
-					<p>
-						Not a coder? Not a problem. There's a fully-featured visual editor for authoring these, try it out at <a href="http://slides.com" target="_blank">http://slides.com</a>.
-					</p>
-				</section>
-
-				<section>
-					<h2>Point of View</h2>
-					<p>
-						Press <strong>ESC</strong> to enter the slide overview.
-					</p>
-					<p>
-						Hold down alt and click on any element to zoom in on it using <a href="http://lab.hakim.se/zoom-js">zoom.js</a>. Alt + click anywhere to zoom back out.
-					</p>
-				</section>
-
-				<section>
-					<h2>Touch Optimized</h2>
-					<p>
-						Presentations look great on touch devices, like mobile phones and tablets. Simply swipe through your slides.
-					</p>
-				</section>
-
-				<section data-markdown>
-					<script type="text/template">
-						## Markdown support
-
-						Write content using inline or external Markdown.
-						Instructions and more info available in the [readme](https://github.com/hakimel/reveal.js#markdown).
-
-						```
-						<section data-markdown>
-						  ## Markdown support
-
-						  Write content using inline or external Markdown.
-						  Instructions and more info available in the [readme](https://github.com/hakimel/reveal.js#markdown).
-						</section>
-						```
-					</script>
-				</section>
-
-				<section>
-					<section id="fragments">
-						<h2>Fragments</h2>
-						<p>Hit the next arrow...</p>
-						<p class="fragment">... to step through ...</p>
-						<p><span class="fragment">... a</span> <span class="fragment">fragmented</span> <span class="fragment">slide.</span></p>
-
-						<aside class="notes">
-							This slide has fragments which are also stepped through in the notes window.
-						</aside>
-					</section>
-					<section>
-						<h2>Fragment Styles</h2>
-						<p>There's different types of fragments, like:</p>
-						<p class="fragment grow">grow</p>
-						<p class="fragment shrink">shrink</p>
-						<p class="fragment fade-out">fade-out</p>
-						<p class="fragment current-visible">current-visible</p>
-						<p class="fragment highlight-red">highlight-red</p>
-						<p class="fragment highlight-blue">highlight-blue</p>
-					</section>
-				</section>
-
-				<section id="transitions">
-					<h2>Transition Styles</h2>
-					<p>
-						You can select from different transitions, like: <br>
-						<a href="?transition=none#/transitions">None</a> -
-						<a href="?transition=fade#/transitions">Fade</a> -
-						<a href="?transition=slide#/transitions">Slide</a> -
-						<a href="?transition=convex#/transitions">Convex</a> -
-						<a href="?transition=concave#/transitions">Concave</a> -
-						<a href="?transition=zoom#/transitions">Zoom</a>
-					</p>
-				</section>
-
-				<section id="themes">
-					<h2>Themes</h2>
-					<p>
-						reveal.js comes with a few themes built in: <br>
-						<!-- Hacks to swap themes after the page has loaded. Not flexible and only intended for the reveal.js demo deck. -->
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/black.css'); return false;">Black (default)</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/white.css'); return false;">White</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/league.css'); return false;">League</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/sky.css'); return false;">Sky</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/beige.css'); return false;">Beige</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/simple.css'); return false;">Simple</a> <br>
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/serif.css'); return false;">Serif</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/blood.css'); return false;">Blood</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/night.css'); return false;">Night</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/moon.css'); return false;">Moon</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/solarized.css'); return false;">Solarized</a>
-					</p>
-				</section>
-
-				<section>
-					<section data-background="#dddddd">
-						<h2>Slide Backgrounds</h2>
-						<p>
-							Set <code>data-background="#dddddd"</code> on a slide to change the background color. All CSS color formats are supported.
-						</p>
-						<a href="#" class="navigate-down">
-							<img width="178" height="238" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Down arrow">
-						</a>
-					</section>
-					<section data-background="https://s3.amazonaws.com/hakim-static/reveal-js/image-placeholder.png">
-						<h2>Image Backgrounds</h2>
-						<pre><code class="hljs">&lt;section data-background="image.png"&gt;</code></pre>
-					</section>
-					<section data-background="https://s3.amazonaws.com/hakim-static/reveal-js/image-placeholder.png" data-background-repeat="repeat" data-background-size="100px">
-						<h2>Tiled Backgrounds</h2>
-						<pre><code class="hljs" style="word-wrap: break-word;">&lt;section data-background="image.png" data-background-repeat="repeat" data-background-size="100px"&gt;</code></pre>
-					</section>
-					<section data-background-video="https://s3.amazonaws.com/static.slid.es/site/homepage/v1/homepage-video-editor.mp4,https://s3.amazonaws.com/static.slid.es/site/homepage/v1/homepage-video-editor.webm" data-background-color="#000000">
-						<div style="background-color: rgba(0, 0, 0, 0.9); color: #fff; padding: 20px;">
-							<h2>Video Backgrounds</h2>
-							<pre><code class="hljs" style="word-wrap: break-word;">&lt;section data-background-video="video.mp4,video.webm"&gt;</code></pre>
-						</div>
-					</section>
-					<section data-background="http://i.giphy.com/90F8aUepslB84.gif">
-						<h2>... and GIFs!</h2>
-					</section>
-				</section>
-
-				<section data-transition="slide" data-background="#4d7e65" data-background-transition="zoom">
-					<h2>Background Transitions</h2>
-					<p>
-						Different background transitions are available via the backgroundTransition option. This one's called "zoom".
-					</p>
-					<pre><code class="hljs">Reveal.configure({ backgroundTransition: 'zoom' })</code></pre>
-				</section>
-
-				<section data-transition="slide" data-background="#b5533c" data-background-transition="zoom">
-					<h2>Background Transitions</h2>
-					<p>
-						You can override background transitions per-slide.
-					</p>
-					<pre><code class="hljs" style="word-wrap: break-word;">&lt;section data-background-transition="zoom"&gt;</code></pre>
-				</section>
-
-				<section>
-					<h2>Pretty Code</h2>
-					<pre><code class="hljs" data-trim contenteditable>
-function linkify( selector ) {
-  if( supports3DTransforms ) {
-
-    var nodes = document.querySelectorAll( selector );
-
-    for( var i = 0, len = nodes.length; i &lt; len; i++ ) {
-      var node = nodes[i];
-
-      if( !node.className ) {
-        node.className += ' roll';
-      }
+<link rel="stylesheet" href="./lib/css/zenburn.css"/>
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
     }
-  }
-}
-					</code></pre>
-					<p>Code syntax highlighting courtesy of <a href="http://softwaremaniacs.org/soft/highlight/en/description/">highlight.js</a>.</p>
-				</section>
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+  <section id="sec-title-slide"><h1 class="title">Modular and extensible effects in Haskell</h1><h2 class="author">Matteo Acerbi</h2>
+  <h3 class="details">2015/10/17 - Bologna - Haskell ITA</h3>
+</section>
 
-				<section>
-					<h2>Marvelous List</h2>
-					<ul>
-						<li>No order here</li>
-						<li>Or here</li>
-						<li>Or here</li>
-						<li>Or here</li>
-					</ul>
-				</section>
+<section>
+<section id="slide-orgheadline7">
+<h2 id="orgheadline7">Monadic effects</h2>
+<div class="outline-text-2" id="text-orgheadline7">
+</div></section>
+<section id="slide-orgheadline1">
+<h3 id="orgheadline1">What is a monad?</h3>
+<p>
+Type constructor with <i>unit</i> (<code>return</code>) and <i>bind</i> (<code>&gt;&gt;=</code>),
+</p>
 
-				<section>
-					<h2>Fantastic Ordered List</h2>
-					<ol>
-						<li>One is smaller than...</li>
-						<li>Two is smaller than...</li>
-						<li>Three!</li>
-					</ol>
-				</section>
+<div class="org-src-container">
 
-				<section>
-					<h2>Tabular Tables</h2>
-					<table>
-						<thead>
-							<tr>
-								<th>Item</th>
-								<th>Value</th>
-								<th>Quantity</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Apples</td>
-								<td>$1</td>
-								<td>7</td>
-							</tr>
-							<tr>
-								<td>Lemonade</td>
-								<td>$2</td>
-								<td>18</td>
-							</tr>
-							<tr>
-								<td>Bread</td>
-								<td>$3</td>
-								<td>2</td>
-							</tr>
-						</tbody>
-					</table>
-				</section>
+<pre><code class="haskell" >class Monad (m :: * -> *) where
+  return :: a -> m a
+  (>>=)  :: m a -> (a -> m b) -> m b
+</code></pre>
+</div>
 
-				<section>
-					<h2>Clever Quotes</h2>
-					<p>
-						These guys come in two forms, inline: <q cite="http://searchservervirtualization.techtarget.com/definition/Our-Favorite-Technology-Quotations">
-						&ldquo;The nice thing about standards is that there are so many to choose from&rdquo;</q> and block:
-					</p>
-					<blockquote cite="http://searchservervirtualization.techtarget.com/definition/Our-Favorite-Technology-Quotations">
-						&ldquo;For years there has been a theory that millions of monkeys typing at random on millions of typewriters would
-						reproduce the entire works of Shakespeare. The Internet has proven this theory to be untrue.&rdquo;
-					</blockquote>
-				</section>
+<p>
+satisfying the following laws:
+</p>
 
-				<section>
-					<h2>Intergalactic Interconnections</h2>
-					<p>
-						You can link between slides internally,
-						<a href="#/2/3">like this</a>.
-					</p>
-				</section>
+<div class="org-src-container">
 
-				<section>
-					<h2>Speaker View</h2>
-					<p>There's a <a href="https://github.com/hakimel/reveal.js#speaker-notes">speaker view</a>. It includes a timer, preview of the upcoming slide as well as your speaker notes.</p>
-					<p>Press the <em>S</em> key to try it out.</p>
+<pre><code class="haskell" >return x >>= f == f x
+m >>= return == m
+(m >>= f) >>= g == m >>= (\ x -> f x >>= g)
+</code></pre>
+</div>
 
-					<aside class="notes">
-						Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
-					</aside>
-				</section>
+</section>
+<section id="slide-orgheadline2">
+<h3 id="orgheadline2">Computational effects can be modelled as monads</h3>
+<ul>
+<li>Example 1: <code>State Int</code></li>
 
-				<section>
-					<h2>Export to PDF</h2>
-					<p>Presentations can be <a href="https://github.com/hakimel/reveal.js#pdf-export">exported to PDF</a>, here's an example:</p>
-					<iframe src="https://www.slideshare.net/slideshow/embed_code/42840540" width="445" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
-				</section>
+</ul>
 
-				<section>
-					<h2>Global State</h2>
-					<p>
-						Set <code>data-state="something"</code> on a slide and <code>"something"</code>
-						will be added as a class to the document element when the slide is open. This lets you
-						apply broader style changes, like switching the page background.
-					</p>
-				</section>
+<div class="org-src-container">
 
-				<section data-state="customevent">
-					<h2>State Events</h2>
-					<p>
-						Additionally custom events can be triggered on a per slide basis by binding to the <code>data-state</code> name.
-					</p>
-					<pre><code class="javascript" data-trim contenteditable style="font-size: 18px;">
-Reveal.addEventListener( 'customevent', function() {
-	console.log( '"customevent" has fired' );
-} );
-					</code></pre>
-				</section>
+<pre><code class="haskell" >increment :: State Int ()
+increment = do
+  x <- get
+  put $ x+1
+</code></pre>
+</div>
 
-				<section>
-					<h2>Take a Moment</h2>
-					<p>
-						Press B or . on your keyboard to pause the presentation. This is helpful when you're on stage and want to take distracting slides off the screen.
-					</p>
-				</section>
+<ul>
+<li>Example 2: <code>IO</code></li>
 
-				<section>
-					<h2>Much more</h2>
-					<ul>
-						<li>Right-to-left support</li>
-						<li><a href="https://github.com/hakimel/reveal.js#api">Extensive JavaScript API</a></li>
-						<li><a href="https://github.com/hakimel/reveal.js#auto-sliding">Auto-progression</a></li>
-						<li><a href="https://github.com/hakimel/reveal.js#parallax-background">Parallax backgrounds</a></li>
-						<li><a href="https://github.com/hakimel/reveal.js#keyboard-bindings">Custom keyboard bindings</a></li>
-					</ul>
-				</section>
+</ul>
 
-				<section style="text-align: left;">
-					<h1>THE END</h1>
-					<p>
-						- <a href="http://slides.com">Try the online editor</a> <br>
-						- <a href="https://github.com/hakimel/reveal.js">Source code &amp; documentation</a>
-					</p>
-				</section>
+<div class="org-src-container">
 
-			</div>
+<pre><code class="haskell" >main :: IO ()
+main = do
+  putStrLn $ "What is your name?"
+  x <- getLine
+  putStrLn $ "Hello, " ++ x ++ "!"
+</code></pre>
+</div>
 
-		</div>
+</section>
+<section id="slide-orgheadline3">
+<h3 id="orgheadline3">More than one monad?</h3>
+<ul>
+<li><p>
+The underlying functors compose!
+</p>
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
+<p>
+<code>State s (Maybe (IO a))</code>
+</p></li>
 
-		<script>
+<li>How to deal with these "stacks" in a uniform way?</li>
 
-			// Full list of configuration options available at:
-			// https://github.com/hakimel/reveal.js#configuration
-			Reveal.initialize({
-				controls: true,
-				progress: true,
-				history: true,
-				center: true,
+</ul>
 
-				transition: 'slide', // none/fade/slide/convex/concave/zoom
+</section>
+<section id="slide-orgheadline4">
+<h3 id="orgheadline4">Monad transformers</h3>
+<p>
+Monads with a "hole" for another monad
+</p>
 
-				// Optional reveal.js plugins
-				dependencies: [
-					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
-					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
-					{ src: 'plugin/zoom-js/zoom.js', async: true },
-					{ src: 'plugin/notes/notes.js', async: true }
-				]
-			});
+<p>
+Values in the inner monad can be lifted to the outer
+</p>
 
-		</script>
+<div class="org-src-container">
 
-	</body>
+<pre><code class="haskell" >class MonadTrans (f :: (* -> *) -> * -> *) where
+  lift :: Monad m => m a -> t m a
+</code></pre>
+</div>
+
+<p>
+<code>lift</code> must respect <code>return</code> and <code>&gt;&gt;=</code>
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >lift . return = return
+lift (m >>= f) = lift m >>= (lift . f)
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline5">
+<h3 id="orgheadline5">Monad transformers</h3>
+<p>
+Examples
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >newtype MaybeT m a = MaybeT {runMaybeT :: m (Maybe a)}
+
+instance MonadTrans MaybeT where
+  lift = MaybeT . liftM Just
+
+type Maybe a = MaybeT Identity a
+</code></pre>
+</div>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >newtype StateT s m a = StateT {runStateT :: s -> m (a, s)}
+
+instance MonadTrans (StateT s) where
+  lift m = StateT $ \ s -> do
+    a <- m
+    return (a, s)
+
+type State s a = StateT s Identity a
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline6">
+<h3 id="orgheadline6">Order is relevant!</h3>
+<p>
+We have
+</p>
+
+<p>
+<code>StateT s Maybe a ≠ MaybeT (State s) a</code>
+</p>
+
+<p>
+because
+</p>
+
+<p>
+<code>s -&gt; Maybe (s , a) ≠ s -&gt; (s , Maybe a)</code>
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline11">
+<h2 id="orgheadline11">Monadic programming: software engineering concerns</h2>
+<div class="outline-text-2" id="text-orgheadline11">
+</div></section>
+<section id="slide-orgheadline8">
+<h3 id="orgheadline8">Issue 1: modularity</h3>
+<p>
+Monolithic effects
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data TheMonadOfMyApp a =
+  TheMonadOfMyApp (MyState -> (IO (MyLog , MyState , a)))
+
+instance Monad TheMonadOfMyApp where
+  ...
+
+justSayHello :: TheMonadOfMyApp ()
+justSayHello = TheMonadOfMyApp $ \ db -> do
+  putStrLn $ "Hello!"
+  return ("Just said hello!" , db , ())
+
+main :: IO ()
+main = runTheMonadOfMyApp initialState $ do
+  justSayHello
+  ...
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline9">
+<h3 id="orgheadline9">Issue 1: modularity</h3>
+<p>
+We would prefer
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >justSayHello :: StdOutput ()
+justSayHello = putStrLn "Hello!"
+</code></pre>
+</div>
+
+<p>
+or
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >justSayHello :: StdOutput m => m ()
+justSayHello = putStrLn "Hello!"
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline10">
+<h3 id="orgheadline10">Issue 2: extensibility</h3>
+<p>
+It should also be <b>easy</b> to add a new effect to our "vocabulary"
+</p>
+
+<p>
+There should be no need to
+</p>
+
+<ul>
+<li>change the types of previous code</li>
+<li>relate the new effect to the previously defined effects</li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline18">
+<h2 id="orgheadline18">Thesis</h2>
+<p>
+Use <b>type classes</b> to capture monadic interfaces
+</p>
+
+</section>
+<section id="slide-orgheadline12">
+<h3 id="orgheadline12">Monad Transformer Library</h3>
+<p>
+standard monad transformers
+</p>
+
+<p>
+<code>+</code>
+</p>
+
+<p>
+type classes with their abstract interfaces
+</p>
+
+<p>
+See <a href="http://web.cecs.pdx.edu/~mpj/pubs/springschool.html">Jones 1995</a>
+</p>
+
+</section>
+<section id="slide-orgheadline13">
+<h3 id="orgheadline13">Example: MonadState</h3>
+<div class="org-src-container">
+
+<pre><code class="haskell" >increment :: State Int ()
+increment = do
+  x <- get
+  put $ x+1
+</code></pre>
+</div>
+
+<p>
+becomes
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >increment :: MonadState Int m => m ()
+increment = do
+  x <- get
+  put $ x+1
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline14">
+<h3 id="orgheadline14">Example: MonadIO</h3>
+<div class="org-src-container">
+
+<pre><code class="haskell" >main :: IO ()
+main = do
+  putStrLn $ "What is your name?"
+  x <- getLine
+  putStrLn $ "Hello, " ++ x ++ "!"
+</code></pre>
+</div>
+
+<p>
+becomes
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >main :: MonadIO m => m ()
+main = do
+  putStrLn $ "What is your name?"
+  x <- getLine
+  putStrLn $ "Hello, " ++ x ++ "!"
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline15">
+<h3 id="orgheadline15">Problem: Cannot have many <code>State</code> s in the stack</h3>
+<p>
+Due to functional dependency!
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >class Monad m => MonadState s m | m -> s where
+  get :: m s
+  put :: s -> m ()
+</code></pre>
+</div>
+
+<p>
+If you omit <code>| m -&gt; s</code>, you need <code>OverlappingInstances</code>
+</p>
+
+<p>
+Same for <code>MonadReader</code> and <code>MonadWriter</code>.
+</p>
+
+</section>
+<section id="slide-orgheadline16">
+<h3 id="orgheadline16">Problem: Order</h3>
+<ul>
+<li>The order of effects counts!</li>
+
+<li>However, we cannot constrain the order of the abstract ones.</li>
+
+<li>How to read <code>program</code>?</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >program :: (MonadError () m , MonadState s m) => m ()
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline17">
+<h3 id="orgheadline17">Problem: Poor extensibility</h3>
+<p>
+To add the (n+1)-th monad transformer,
+</p>
+
+<p>
+we must give <a href="https://hackage.haskell.org/package/mtl-2.2/docs/src/Control-Monad-Reader-Class.html">n instances</a>.
+</p>
+
+<p>
+<code>lift</code> is extremely ad hoc!
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline32">
+<h2 id="orgheadline32">Antithesis</h2>
+<p>
+Represent effectful programs as <b>modular</b> <b>syntax</b>
+</p>
+
+<p>
+<b>Handlers</b> interpret syntax as monads
+</p>
+
+</section>
+<section id="slide-orgheadline19">
+<h3 id="orgheadline19">Free Monad</h3>
+<p>
+A datatype parameterised by a <code>f :: * -&gt; *</code> operator
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data Free f a =
+    Return a
+  | Free (f (Free f a))
+</code></pre>
+</div>
+
+<p>
+When <code>f</code> is a <code>Functor</code>, <code>Free f</code> is a <code>Monad</code> !
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >instance Functor f => Monad (Free f) where
+  return = Return
+  (Return a) >>= f = f a
+  (Free  xs) >>= f = Free (fmap (>>= f) xs)
+</code></pre>
+</div>
+
+<p>
+We use <code>Free a</code> as a generic representation for monadic computations
+</p>
+
+</section>
+<section id="slide-orgheadline20">
+<h3 id="orgheadline20">What is <code>Free f</code>?</h3>
+<ul>
+<li><p>
+Example: Take <code>f = Arithmetics</code>
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data Arithmetics a =
+    Val Int
+  | Plus a a
+  deriving Functor
+</code></pre>
+</div></li>
+
+<li><code>Free Arithmetics x</code> represents expressions made from
+<ul>
+<li>integer values</li>
+<li>binary operator <code>+</code></li>
+<li>variables from the set <code>x</code></li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline21">
+<h3 id="orgheadline21">What is <code>Free f</code>?</h3>
+<p>
+Take <code>Vars</code> as the type of two "variables" <code>x</code> and <code>y</code>
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data Vars = varX | varY
+</code></pre>
+</div>
+
+<p>
+<code>x + (2 + y)</code> is captured by
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >Free (Plus (return varX)
+           (Free (Plus (Val 2)
+                       (return varY))))
+</code></pre>
+</div>
+
+<p>
+Monadic operations:
+</p>
+
+<ul>
+<li><code>return x</code> is an <b>occurrence</b> of variable <code>x</code></li>
+
+<li><code>&gt;&gt;=</code> is <b>substitution</b></li>
+
+</ul>
+
+
+
+
+
+
+
+</section>
+<section id="slide-orgheadline22">
+<h3 id="orgheadline22">Datatypes à la carte [W. Swierstra, 2008]</h3>
+<p>
+A simple notion of subtyping between functors:
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data (f :+: g) e = Inl (f e) | Inr (g e)
+
+class (Functor sub, Functor sup) => (:<:) sub sup where
+  inj :: sub a -> sup a
+
+instance (Functor f, Functor g, Functor h, f :<: g) => f :<: (g :+: h) where
+  inj = Inl
+
+instance (Functor f, Functor g, Functor h, f :<: h) => f :<: (g :+: h) where
+  inj = Inr
+</code></pre>
+</div>
+
+<p>
+Not real Haskell: original version has restrictions
+</p>
+
+<p>
+See also <a href="http://wadler.blogspot.it/2008/02/data-types-la-carte.html">Wadler 2008 (blog)</a>, <a href="http://www.diku.dk/~paba/pubs/files/bahr14stg-slides.pdf">Bahr 2014 (slides)</a>
+</p>
+
+</section>
+<section id="slide-orgheadline23">
+<h3 id="orgheadline23">Handlers</h3>
+<ul>
+<li>Take <code>m</code> as the target monad</li>
+
+<li><p>
+A <b>handler</b> for the <b>effect</b> <code>f</code> is a function of type:
+</p>
+
+<p>
+<code>forall a. f (m a) -&gt; m a</code>
+</p></li>
+
+<li>Let's fix <code>m = IO</code> as target</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >class Functor f => Handler f where
+  handler :: forall a. f (IO a) -> IO a
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline24">
+<h3 id="orgheadline24">Example: <code>Teletype</code> + <code>FileSystem</code></h3>
+<p>
+Effects
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data Teletype a =
+    GetChar (Char -> a)
+  | PutChar Char a
+  deriving Functor
+
+data FileSystem a =
+    ReadFile  FilePath (String -> a)
+  | WriteFile FilePath String a
+  deriving Functor
+</code></pre>
+</div>
+
+<p>
+Primitives
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >getChar   :: Teletype   :<: f => Free f Char
+putChar   :: Teletype   :<: f => Char -> Free f ()
+readFile  :: FileSystem :<: f => FilePath -> Free f String
+writeFile :: FileSystem :<: f => FilePath -> String -> Free f ()
+
+getChar = GetChar Return
+putChar c = PutChar c $ Return ()
+readFile fp = ReadFile fp Return
+writeFile fp s = WriteFile fp s $ Return ()
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline25">
+<h3 id="orgheadline25">Example: <code>Teletype</code> + <code>FileSystem</code></h3>
+<p>
+Example program: UNIX <code>cat</code>
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >cat :: FilePath -> Free (Teletype :+: FileSystem) ()
+cat fp = readFile fp >>= mapM_ putChar
+</code></pre>
+</div>
+
+<p>
+(Alternative type for the same program)
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >cat :: (Teletype :<: f , FileSystem :<: f) => FilePath -> Free f ()
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline26">
+<h3 id="orgheadline26">Example: <code>Teletype</code> + <code>FileSystem</code></h3>
+<p>
+Handlers
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >instance Handler Teletype where
+  handler (GetChar   f) = Prelude.getChar >>= f
+  handler (PutChar c m) = Prelude.putChar x >> m
+
+instance Handle FileSystem where
+  handler (ReadFile  fp   f) = Prelude.readFile fp >>= f
+  handler (WriteFile fp s m) = Prelude.writeFile fp s >> m
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline27">
+<h3 id="orgheadline27">Modularity!</h3>
+<p>
+Handler for the sum of two effects, given the single handlers
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >instance (Handler f, Handler g) => Handler (f :+: g) where
+  handler (Inl x) = handler x
+  handler (Inr y) = handler y
+</code></pre>
+</div>
+
+<p>
+A generic evaluator for effectful programs
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >handle :: Handler f => Free f a -> IO a
+handle (Return a) = return a
+handle (Pure  xs) = handle (fmap handle xs)
+</code></pre>
+</div>
+
+<p>
+Example: running the <code>cat</code> program in the <code>IO</code> monad
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >main :: IO ()
+main = handle cat
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline28">
+<h3 id="orgheadline28">Extensibility?</h3>
+<p>
+Easy to define a new effect!
+</p>
+
+<p>
+However, extending the <b>target</b> monad is <b>not</b> considered.
+</p>
+
+<p>
+E.g.: with <code>IO</code> as target monad, how to interpret <code>State s</code>?
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data State s a =
+    Get (s -> State s a)
+  | Put s (State s a)
+</code></pre>
+</div>
+
+<p>
+Without unsafe tricks, <code>IO a</code> cannot manage a state of type <code>s</code>!
+</p>
+
+</section>
+<section id="slide-orgheadline29">
+<h3 id="orgheadline29">Left-nested applications of <code>++</code></h3>
+<p>
+Intuitively,
+</p>
+
+<p>
+<code>(xs ++ ys) ++ zs</code> takes <code>|xs| + (|xs| + |ys|)</code> steps
+</p>
+
+<p>
+while
+</p>
+
+<p>
+<code>xs ++ (ys ++ zs)</code> takes <code>|xs| + |ys|</code> steps.
+</p>
+
+<p>
+Consequence: <code>reverse</code> via <code>++</code> is \(O(n^2)\) instead of \(O(n)\).
+</p>
+
+</section>
+<section id="slide-orgheadline30">
+<h3 id="orgheadline30">Left-nested applications of <code>Free.&gt;&gt;=</code></h3>
+<p>
+Similarly, for <code>Free</code>
+</p>
+
+<p>
+<code>(m &gt;&gt;= f) &gt;&gt;= g</code>
+</p>
+
+<p>
+is slower than
+</p>
+
+<p>
+<code>m &gt;&gt;= (\ x -&gt; f x &gt;&gt;= g)</code>
+</p>
+
+<p>
+[<a href="http://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf">Voigtländer 2008</a>] shows examples of affected algorithms.
+</p>
+
+<p>
+Higher-order free-monadic programs become problematic!
+</p>
+
+</section>
+<section id="slide-orgheadline31">
+<h3 id="orgheadline31">Solutions</h3>
+<ul>
+<li>Unimo  [<a href="https://sites.google.com/site/chklin/research/unimo-icfp06.pdf?attredirects=0">Chuan-kai Lin 2006</a>]</li>
+<li>Codensity [<a href="http://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf">Voigtländer 2008</a>]</li>
+<li>Continuation [<a href="http://homepages.inf.ed.ac.uk/slindley/papers/handlers.pdf">KammarLindleyOury 2013</a>]</li>
+<li>Freer [<a href="http://okmij.org/ftp/Haskell/extensible/more.pdf">KiselyovIshii 2015</a>]</li>
+<li>&#x2026;</li>
+
+</ul>
+
+<p>
+<a href="#/slide-faster">(details)</a>
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline43">
+<h2 id="orgheadline43">Synthesis</h2>
+<p>
+Use <b>type classes</b> and <b>type families</b> to capture monadic interfaces
+</p>
+
+</section>
+<section id="slide-orgheadline33">
+<h3 id="orgheadline33">Modularity</h3>
+<ul>
+<li>Type families and constraint kinds allow "microeffects":</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >class Monad m => Get a m where
+  get :: m a
+
+class Monad m => Put a m where
+  put :: a -> m ()
+
+type family State (a :: *) (m :: * -> *) :: Constraint
+type instance State a m = (Get a m , Put a m)
+
+class Monad m => Input m where
+  input :: m String
+class Monad m => Output m where
+  output :: String -> m ()
+
+type family InputOutput (m :: * -> *) :: Constraint
+type instance InputOutput m = (Input m , Output m)
+</code></pre>
+</div>
+
+<ul>
+<li>Doing this with a class definition seems to require</li>
+
+</ul>
+<p>
+<code>UndecidableInstances</code>
+</p>
+
+<ul>
+<li>Not sure about where to mention laws, though!</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline34">
+<h3 id="orgheadline34">Modularity</h3>
+<p>
+Example usage:
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >inputAmount :: Input m => m (Maybe Amount)
+inputAmount = liftM readMaybe input
+
+deposit :: (InputOutput m , Put Amount m) => m ()
+deposit = do
+  x <- untilJust $ do
+    output "Enter the amount you want to store:"
+    inputAmount
+  put x
+  output "Goodbye!"
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline35">
+<h3 id="orgheadline35">An interesting library</h3>
+<ul>
+<li><code>monad-classes</code> by Roman Cheplyaka</li>
+<li><a href="https://ro-che.info/articles/extensible-effects">blog</a></li>
+<li><a href="https://github.com/feuerbach/monad-classes">code</a></li>
+<li>Used in production at Signal Vine</li>
+<li>No theoretical treatment (yet)</li>
+<li>Similar: <code>extensible-transformers</code></li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline36">
+<h3 id="orgheadline36"><code>monad-classes</code>: Extensibility</h3>
+<ul>
+<li>Finding a transformer in a stack, with type families</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >type family Find (t :: (* -> *) -> (* -> *)) (m :: * -> *) :: Nat where
+  Find t (t m) = Zero
+  Find t (p m) = Suc (Find t m)
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline37">
+<h3 id="orgheadline37"><code>monad-classes</code>: Extensibility</h3>
+<ul>
+<li>Example: lifting <code>Reader</code>'s <code>ask</code> to any transformer stack</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >class Monad m => MonadReaderN (n :: Nat) r m where
+  askN :: Proxy n -> m r
+
+instance Monad m => MonadReaderN Zero r (ReaderT r m) where
+  askN _ = Trans.ask
+
+instance (MonadTrans t, Monad (t m), MonadReaderN n r m, Monad m) =>
+         MonadReaderN (Suc n) r (t m) where
+  askN _ = lift $ askN (Proxy :: Proxy n)
+
+type MonadReader r m = MonadReaderN (Find (ReaderT r) m) r m
+
+ask :: forall m r . MonadReader r m => m r
+ask = askN (Proxy :: Proxy (Find (ReaderT r) m))
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline38">
+<h3 id="orgheadline38"><code>monad-classes</code>: Extensibility</h3>
+<ul>
+<li>Quadratic number of instances, no more!</li>
+
+<li>No functional dependencies -&gt; may have several <code>State s</code></li>
+
+<li>You can use newtypes for <code>s</code> to distinguish their roles</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline39">
+<h3 id="orgheadline39"><code>monad-classes</code>: <code>CanDo</code></h3>
+<div class="org-src-container">
+
+<pre><code class="haskell" >type family CanDo (m :: (* -> *)) (eff :: k) :: Bool
+</code></pre>
+</div>
+
+<ul>
+<li>Allows the lifting to be independent of specific transformers</li>
+
+<li>We can lift to effects which are more general than those requested</li>
+
+<li>e.g.: <code>StateT</code> generalises both <code>ReaderT</code> and <code>WriterT</code></li>
+
+<li>See <a href="http://ro-che.info/">http://ro-che.info/</a> for more.</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline40">
+<h3 id="orgheadline40">Why is this a synthesis?</h3>
+<ul>
+<li><p>
+Consider the syntactic constructions
+</p>
+
+<p>
+<code>Free</code>, <code>Operational</code>, <code>Unimo</code>, <code>Freer</code> &#x2026;
+</p></li>
+
+<li>You might want to use them for your project!</li>
+
+<li>However, have your syntax instantiate the abstract interfaces:</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >instance (Teletype :<: f) => Input (Free f) where
+  input = getChar
+instance (Teletype :<: f) => Output (Free f) where
+  output = putChar
+instance (FileSystem :<: f) => ReadFile (Free f) where
+  readFile = FileSystem.readFile
+instance (FileSystem :<: f) => WriteFile (Free f) where
+  writeFile = FileSystem.writeFile
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline41">
+<h3 id="orgheadline41">Why is this a synthesis?</h3>
+<ul>
+<li>Then, write programs with abstract types</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >cat :: (Output m , ReadFile m) => FilePath -> m ()
+cat fp = readFile fp >>= mapM_ output
+</code></pre>
+</div>
+
+<ul>
+<li>Pick a concrete representation only at the very end</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >main :: IO ()
+main = handle cat
+</code></pre>
+</div>
+
+<p>
+(Remember that <code>handle :: Handler f =&gt; Free f a -&gt; IO a</code>)
+</p>
+
+</section>
+<section id="slide-orgheadline42">
+<h3 id="orgheadline42">Warning!</h3>
+<ul>
+<li>I did not test this</li>
+
+<li>It probably needs more annotations</li>
+
+<li>It might prevent some optimisations</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline47">
+<h2 id="orgheadline47">Conclusions</h2>
+<div class="outline-text-2" id="text-orgheadline47">
+</div></section>
+<section id="slide-orgheadline44">
+<h3 id="orgheadline44">Datatypes à la Carte, Handlers in Action, Freer&#x2026;</h3>
+<ul>
+<li>Important connections with theory</li>
+
+<li>Performance oddities not unlikely
+<ul>
+<li><a href="https://github.com/feuerbach/freemonad-benchmark">freemonad-benchmark</a></li>
+<li>[<a href="http://okmij.org/ftp/Haskell/extensible/more.pdf">KiselyovIshii 2015</a>]</li>
+
+</ul></li>
+
+<li>Still, free-monadic code can be analysed by other programs
+<ul>
+<li>optimising interpreters or compilers!</li>
+<li>e.g.: Haxl</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline45">
+<h3 id="orgheadline45">MTL, <code>monad-classes</code>, (finally-tagless), &#x2026;</h3>
+<ul>
+<li>Monad stacks are inevitable in Haskell</li>
+
+<li>Maybe also monad transformer stacks</li>
+
+<li>People will use their own
+<ul>
+<li>HisApp x y</li>
+<li>TheirFramework a b c d</li>
+
+</ul></li>
+
+<li>Better make an effort to keep effects abstract</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline46">
+<h3 id="orgheadline46">Gang of Four, 1995</h3>
+<p>
+"Program to an 'interface', not an 'implementation'."
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline48">
+<h2 id="orgheadline48">QA</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline49">
+<h2 id="orgheadline49">Grazie!</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline50">
+<h2 id="orgheadline50">More &#x2026;</h2>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline52">
+<h2 id="orgheadline52">&#x2026; on monad transformers</h2>
+<div class="outline-text-2" id="text-orgheadline52">
+</div></section>
+<section id="slide-orgheadline51">
+<h3 id="orgheadline51">Monatron</h3>
+<ul>
+<li>solves some problems</li>
+<li>requires more structure:</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >class MonadT t where
+  lift    :: Monad m => m a -> t m a
+  treturn :: Monad m => a -> t m a
+  tbind   :: Monad m => t m a -> (a -> t m b) -> t m b
+</code></pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline56">
+<h2 id="orgheadline56">&#x2026; on "free" effects</h2>
+<div class="outline-text-2" id="text-orgheadline56">
+</div></section>
+<section id="slide-orgheadline53">
+<h3 id="orgheadline53">Effects, syntactically</h3>
+<p>
+The syntactic <code>State</code> monad
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data State s x =
+    Return x
+  | Get (s -> State s x)
+  | Put s (State s x)
+
+instance Monad State where
+  return = Return
+  (Get k  ) >>= f = Get (\ s -> k s >>= f)
+  (Put s x) >>= f = Put s (x >>= f)
+
+handle :: State s x -> s -> (s , x)
+handle (Return x  ) s = (s , x)
+handle (Get    f  ) s = handle (f s) s
+handle (Put    s x) _ = handle
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline54">
+<h3 id="orgheadline54">Effects, syntactically</h3>
+<p>
+Programs in the syntactic State monad
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >get :: State s s
+get = Get (\ s -> Return s)
+
+put :: State s ()
+put s = Put s (Return ())
+
+increment :: State Int ()
+increment = get >>= put . (+1)
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgheadline55">
+<h3 id="orgheadline55">Problem: syntactic <code>State</code> is not modular!</h3>
+<p>
+We need a more generic representation
+</p>
+
+
+</section>
+</section>
+<section>
+<section id="slide-faster">
+<h2 id="faster"><a id="orgheadline63"></a>&#x2026; on faster free monadic computations</h2>
+</section>
+<section id="slide-orgheadline57">
+<h3 id="orgheadline57">Alternative free monad: <code>Operational</code></h3>
+<div class="org-src-container">
+
+<pre><code class="haskell" >data Operational f a where
+    Return :: a -> Operational f a
+    Then   :: forall a. f a -> (a -> Operational f b) -> Operational f b
+</code></pre>
+</div>
+
+<p>
+By Parametricity, <code>Operational f a</code> is isomorphic to <code>Free f a</code>
+</p>
+
+</section>
+<section id="slide-orgheadline58">
+<h3 id="orgheadline58">1. Unimo [<a href="https://sites.google.com/site/chklin/research/unimo-icfp06.pdf?attredirects=0">Chuan-kai Lin 2006</a>]</h3>
+<div class="org-src-container">
+
+<pre><code class="haskell" >data Unimo f a =
+    Return a
+  | Free (f (Free f a))
+  | forall b. Bind (Unimo f b) (b -> Unimo f a)
+</code></pre>
+</div>
+
+<ul>
+<li>Not really a monad
+<ul>
+<li>You must restrict observations</li>
+<li>See also Uustalu 2012, Jaskelioff 2015</li>
+
+</ul></li>
+<li>Easy to use and understand</li>
+<li>(The <code>operational</code> package adds <code>Bind</code> internally)</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline59">
+<h3 id="orgheadline59">2. Codensity [<a href="http://www.janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf">Voigtländer 2008</a>]</h3>
+<ul>
+<li><code>Codensity</code> transformation</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >newtype Codensity f a = Codensity (forall r. (a -> f r) -> f r)
+</code></pre>
+</div>
+
+<ul>
+<li>Yoneda lemma implies this isomorphism:</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >rep :: Monad m => Codensity m a -> m a
+abs :: Monad m => m a -> Codensity m a
+</code></pre>
+</div>
+
+<ul>
+<li><p>
+If you use <code>Codensity (Free f)</code> instead of <code>Free f</code>:
+</p>
+
+<p>
+<code>(m &gt;&gt;= f) &gt;&gt;= g</code>
+reduces to (almost)
+<code>m &gt;&gt;= \ x -&gt; f x &gt;&gt;= g</code>
+</p>
+
+<p>
+before <code>m</code>, <code>f</code> and <code>g</code> are evaluated!
+</p></li>
+
+<li>Related to CPS transformation</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline60">
+<h3 id="orgheadline60">6. Continuation [<a href="http://homepages.inf.ed.ac.uk/slindley/papers/handlers.pdf">KammarLindleyOury 2013</a>]</h3>
+<ul>
+<li>One of three alternative representations for "Handlers in Action"</li>
+<li>Ad-hoc continuation monad</li>
+<li>No recursive datatypes, no tags</li>
+<li>If I understood correctly, similar to "<a href="http://comonad.com/reader/2011/free-monads-for-less-2/">Going to Church</a>"</li>
+<li>More extensible than Datatypes à la Carte</li>
+<li>Template Haskell 😟</li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline61">
+<h3 id="orgheadline61">9. Freer [<a href="http://okmij.org/ftp/Haskell/extensible/more.pdf">KiselyovIshii 2015</a>]</h3>
+<ul>
+<li>Based on <code>Operational</code></li>
+
+<li>No <code>:+:</code> and <code>:&lt;:</code>, but
+<ul>
+<li><code>Union r v ::</code>
+    <code>*</code>
+<ul>
+<li>where <code>r</code> is a type-level list of "effect labels"</li>
+<li>and <code>v</code> is the type of "variables"</li>
+
+</ul></li>
+<li><code>Member f r ::</code>
+    <code>Constraint</code></li>
+
+</ul></li>
+
+<li>Precedence between handlers counts!
+<ul>
+<li>No functor algebras</li>
+<li>Each handler relays on the next</li>
+<li>Easier to extend target monad!</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-orgheadline62">
+<h3 id="orgheadline62">9. Freer [<a href="http://okmij.org/ftp/Haskell/extensible/more.pdf">KiselyovIshii 2015</a>]</h3>
+<ul>
+<li><p>
+Interesting optimisation [<a href="http://okmij.org/ftp/Haskell/zseq.pdf">KiselyovVanDerPloeg 2014</a>]
+</p>
+
+<p>
+Recall <code>Operational</code>:
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="haskell" >data Operational f a where
+  Return :: a -> Operational f a
+  Then :: forall a. f a -> (a -> Operational f b) -> Operational f b
+</code></pre>
+</div>
+
+<p>
+In <code>Freer</code>, <code>(a -&gt; Operational f b)</code> is "reified" as an efficient
+heterogeneous sequence of continuations (fast append!)
+</p></li>
+
+<li>No algebras -&gt; more extensible than Datatypes à la Carte</li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="./lib/js/head.min.js"></script>
+<script src="./js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: true,
+center: true,
+slideNumber: false,
+rollingLinks: true,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: './plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+ { src: './plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
 </html>
